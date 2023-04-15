@@ -1,7 +1,16 @@
-import pandas as pd
-import yfinance as yf
 import numpy as np
-import matplotlib.pyplot as plt
+import yfinance as yf
+from scipy.optimize import minimize
+
+def checkSumToOne(w):
+    return np.sum(w)-1
+
+def negativeSR(w, meanLogRet, Sigma):
+    w = np.array(w)
+    R = np.sum(meanLogRet*w)
+    V = np.sqrt(np.dot(w.T,np.dot(Sigma,w)))
+    SR = R/V
+    return -1*SR
 
 def get_portfolio(reit_keys):
     """
@@ -14,7 +23,7 @@ def get_portfolio(reit_keys):
     portfolio = portfolio.drop(portfolio.columns[0:], axis=1)
     for asset in reit_keys:
         temp = yf.Ticker(asset)
-        temp_historical = temp.history(start="2021-01-01", end="2021-04-02", interval="1d")
+        temp_historical = temp.history(start="2021-03-01", end="2021-04-02", interval="1d")
         close = temp_historical['Close']
         portfolio[asset] = close
     returns = portfolio/portfolio.shift(1)
@@ -39,6 +48,10 @@ def get_portfolio(reit_keys):
         expectedReturn[k] = np.sum(meanLogRet* w)
         expectedVolatility[k] = np.sqrt(np.dot(w.T, np.dot(Sigma,w)))
         sharpeRatio[k] = expectedReturn[k]/expectedVolatility[k]
-    maxIndex = sharpeRatio.argmax()
-
-    return weight[maxIndex,:]
+    
+    w0 = [1/len(reit_keys)] * len(reit_keys)
+    bounds = tuple((0, 1) for i in range(len(reit_keys)))
+    constraints = ({'type':'eq','fun':checkSumToOne})
+    w_opt = minimize(negativeSR,w0,method='SLSQP',bounds = bounds,constraints = constraints, args=(meanLogRet, Sigma))
+    
+    return meanLogRet,Sigma,w_opt.x
