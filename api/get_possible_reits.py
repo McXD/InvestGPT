@@ -14,5 +14,5 @@ def get_possible_reits(profile):
     company_list = final_company.iloc[:, 1].tolist()
     return company_list
 
-if __name__ == '__main__':
-    print(get_possible_reits([0.296,2.483]))
+
+print(get_possible_reits([0.296,2.483]))

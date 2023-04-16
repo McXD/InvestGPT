@@ -111,9 +111,9 @@ def map_risk_profile(map):
     # output：0.296,2.483
     return result
 
+# get the expected value and risk
+search = map_risk_profile(init_map())
+for i in search:
+    print(i)
 
-if __name__ == '__main__':
-    search = map_risk_profile(init_map())
-    for i in search:
-        print(i)
 
