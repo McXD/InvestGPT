@@ -73,11 +73,12 @@ def chat_completion():
             if 'age' in data:  # risk profile
                 risk_value = map_risk_profile(data)
                 reit_keys = get_possible_reits(risk_value)
-                user_msg = f"Below are the REITs that match the user's risk profile: {', '.join(reit_keys)}. Please let the user select the REITs he wants to invest in. After you get the user's selection, respond with this json format: {{'reit_keys': ['EQIX', 'SBAC']}}."
+                user_msg = f"Below are the REITs that match the user's risk profile: {', '.join(reit_keys)}. Please let the user select the REITs he wants to invest in. After you get the user's selection, respond with the json format, example: {{\"reit_keys\": [\"EQIX\", \"SBAC\"]}}."
             elif 'reit_keys' in data:  # reit selection
                 reit_keys = data['reit_keys']
                 weights = get_portfolio(reit_keys)
                 user_msg = f"Below is the optimal portfolio: {', '.join([f'{reit_keys[i]}: {weights[i]}' for i in range(len(reit_keys))])}. Please let the user know the optimal portfolio."
+
             conversation.extend([
                 {"role": "assistant", "content": response_text},
                 {"role": "user", "content": f"{admin_msg} {user_msg}"}
