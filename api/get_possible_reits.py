@@ -8,7 +8,7 @@ def get_possible_reits(profile):
     """
 
 
-    df = pd.read_excel('company.xls')
+    df = pd.read_csv('../data.csv')
     processed_company = df.loc[df["return"] >=profile[0]]
     final_company = processed_company.loc[processed_company["SR"] <= profile[1]]
     company_list = final_company.iloc[:, 1].tolist()
